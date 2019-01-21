@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { SubjectMustHaveNameException, SubjectMustHaveCodeException } from "./exceptions";
+import { SubjectMustHaveNameException, SubjectMustHaveCodeException } from "../exceptions";
 
 class Subject {
   constructor(build) {
