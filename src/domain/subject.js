@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { isEmpty } from "lodash";
 import { SubjectMustHaveNameException, SubjectMustHaveCodeException } from "../exceptions";
 
 class Subject {
@@ -18,10 +18,10 @@ class Subject {
         return this;
       }
       build() {
-        if (_.isEmpty(this.name)) {
+        if (isEmpty(this.name)) {
           throw new SubjectMustHaveNameException();
         }
-        if (_.isEmpty(this.code)) {
+        if (isEmpty(this.code)) {
           throw new SubjectMustHaveCodeException();
         }
         return new Subject(this);
