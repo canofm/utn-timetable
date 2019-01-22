@@ -16,3 +16,7 @@ new PrettyError().start();
 app.use(config.api.baseUri, router);
 
 export default app;
+
+process.on("uncaughtException", err => {
+  console.error(err.stack);
+});
