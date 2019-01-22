@@ -14,7 +14,8 @@
     "express": "^4.16.4",
     "http": "^0.0.0",
     "lodash": "^4.17.11",
-    "mongoose": "^5.4.5"
+    "mongoose": "^5.4.5",
+    "pretty-error": "^2.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
