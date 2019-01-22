@@ -2,7 +2,7 @@ import { EntityNotFound } from "../../exceptions";
 import { merge } from "lodash";
 
 class RepositoryFactory {
-  static createCRUD(model) {
+  static createCRUD(model, ...overrides) {
     class CRUDRepository {
       get(id) {
         return model.findById(id).catch(() => {
@@ -28,7 +28,7 @@ class RepositoryFactory {
         return this.get(id).then(entity => entity.remove());
       }
     }
-    return new CRUDRepository();
+    return merge(new CRUDRepository(), overrides);
   }
 }
 
