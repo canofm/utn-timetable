@@ -12,23 +12,23 @@ class SubjectService {
   }
 
   create(subject) {
-    this.repository.create(subject);
+    return this.repository.create(subject);
   }
 
   update(id, subject) {
-    this.repository.update(id, subject);
+    return this.repository.update(id, subject);
   }
 
   get(id) {
-    this.repository.get(id);
+    return this.repository.get(id);
   }
 
   getAll() {
-    this.repository.getAll();
+    return this.repository.getAll();
   }
 
   delete(id) {
-    this.repository.delete(id);
+    return this.repository.delete(id);
   }
 }
 
