@@ -1,14 +1,11 @@
 import mongoose from "mongoose";
 import appConfig from "./config";
-import * as Promise from "bluebird";
 
-mongoose.Promise = Promise;
+mongoose.Promise = require("bluebird");
 
 export const connect = (config = appConfig) => {
   return mongoose.connect(
     config.db.url,
-    {
-      useMongoClient: true
-    }
+    { useNewUrlParser: true }
   );
 };

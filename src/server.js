@@ -1,12 +1,14 @@
 import express from "express";
 import bodyParser from "body-parser";
+import cors from "cors";
 import { connect } from "./db";
 import { router } from "./api";
 import config from "./config";
 import PrettyError from "pretty-error";
 
 const app = express();
-app.use(bodyParser.urlencodeed({ extended: true }));
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 /* connecting to mongodb */
