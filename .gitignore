@@ -2,3 +2,5 @@
 /.vscode
 .env
 yarn-error.log
+/coverage
+/.nyc_output

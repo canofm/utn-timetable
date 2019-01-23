@@ -4,7 +4,7 @@
   "description": "Timetable registry for courses of UTN FRBA",
   "main": "src/index.js",
   "scripts": {
-    "test": "mocha --require @babel/register src/**/**/*.spec.js",
+    "test": "nyc --reporter=html mocha --require @babel/register --recursive 'src/**/**/*.js'",
     "start": "nodemon --exec babel-node src/index.js",
     "serve": "node dist/server.js"
   },
@@ -36,6 +36,7 @@
     "eslint-plugin-prettier": "^3.0.1",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.9",
+    "nyc": "^13.1.0",
     "prettier": "1.15.3"
   }
 }
