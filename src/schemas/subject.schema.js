@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import {
-  DuplicatedSubjectException,
+  DuplicatedEntityException,
   MONGO_EXCEPTION,
   DUPLICATED_KEY_ERROR_CODE
 } from "../exceptions";
@@ -20,7 +20,7 @@ const subjectSchema = new mongoose.Schema({
 
 subjectSchema.post("save", (error, doc, next) => {
   if (error.name === MONGO_EXCEPTION && error.code === DUPLICATED_KEY_ERROR_CODE) {
-    next(new DuplicatedSubjectException(doc));
+    next(new DuplicatedEntityException(error.errmsg));
   } else {
     next();
   }

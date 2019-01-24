@@ -11,6 +11,8 @@ class RepositoryFactory {
       }
 
       getAll() {
+        // TODO: Add pagination
+        // TODO: Add filters
         return model.find({});
       }
 

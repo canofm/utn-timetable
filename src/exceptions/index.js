@@ -36,12 +36,10 @@ export class EntityNotFound extends Exception {
   }
 }
 
-export class DuplicatedSubjectException extends Exception {
+export class DuplicatedEntityException extends Exception {
   constructor(...args) {
-    const name = args[0];
-    const code = args[1];
-    super(DuplicatedSubjectException, ...args);
-    this.text = `Entity with name=${name} or code=${code} already exists`;
+    super(DuplicatedEntityException, ...args);
+    this.text = args[0];
     this.type = "duplicated_subject_exception";
   }
 }

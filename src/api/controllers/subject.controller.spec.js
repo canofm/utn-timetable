@@ -4,23 +4,40 @@ import { cleanDb } from "../../test_helpers";
 import app from "../../server";
 import config from "../../config";
 import { EntityNotFound } from "../../exceptions";
+import { SubjectRepository } from "../repositories";
+import { Subject } from "../../domain";
+import { omit } from "lodash";
 
 chai.use(chaiHttp);
 const request = () => chai.request(app);
 
 describe("Subject API", () => {
-  beforeEach(() => {
-    cleanDb();
-  });
-
+  beforeEach(() => cleanDb());
   describe("GET", () => {
+    let subject;
+
+    beforeEach(done => {
+      subject = new Subject.Builder()
+        .name("aName")
+        .code("123456")
+        .build();
+
+      SubjectRepository.create(subject).then(() => done());
+    });
+
+    afterEach(() => cleanDb());
+
     it("should get all subjects", () => {
       request()
         .get("/api/v0/subject/")
         .then(res => {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
-          expect(res.body).to.be.eql([]);
+          // eslint-disable-next-line
+          const [elem, _] = res.body.items;
+          const item1 = omit(elem, ["_id", "__v"]);
+          expect(item1.name).to.be.eql(subject.name);
+          expect(item1.code).to.be.eql(subject.code);
         });
     });
 

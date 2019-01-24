@@ -27,7 +27,7 @@ export default class ControllerFactory {
       getAll(req, res, next) {
         return service
           .getAll()
-          .then(entity => res.status(200).json(entity))
+          .then(entity => res.status(200).json({ items: entity, total: entity.length }))
           .catch(err => next(err));
       }
 

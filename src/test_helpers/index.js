@@ -1,13 +1,24 @@
 import mongoose from "mongoose";
 import { connect } from "../db";
+import "../domain/subject";
 
 const bluebird = require("bluebird");
 mongoose.Promise = bluebird;
 
 export const removeModel = modelName => {
   const model = mongoose.model(modelName);
-  if (!model) bluebird.resolve();
-  model.remove();
+  return new Promise((resolve, reject) => {
+    if (!model) {
+      return resolve();
+    }
+    model.deleteOne(err => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
 };
 
 export const cleanDb = () => {
