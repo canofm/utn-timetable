@@ -1,5 +1,5 @@
 import { isEmpty } from "lodash";
-import { SubjectMustHaveNameException, SubjectMustHaveCodeException } from "../exceptions";
+import { PropertyLeftException } from "../exceptions";
 
 class Subject {
   constructor(build) {
@@ -19,10 +19,10 @@ class Subject {
       }
       build() {
         if (isEmpty(this.name)) {
-          throw new SubjectMustHaveNameException();
+          throw new PropertyLeftException("Subject", "name");
         }
         if (isEmpty(this.code)) {
-          throw new SubjectMustHaveCodeException();
+          throw new PropertyLeftException("Subject", "code");
         }
         return new Subject(this);
       }

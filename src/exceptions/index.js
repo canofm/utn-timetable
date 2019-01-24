@@ -1,36 +1,48 @@
-export class SubjectMustHaveNameException extends Error {
-  constructor(...args) {
+import { merge } from "lodash";
+
+class Exception extends Error {
+  constructor(clazz, ...args) {
     super(...args);
-    this.message = "Subject must have a name";
-    Error.captureStackTrace(this, SubjectMustHaveCodeException);
+    this.message = {};
+    Error.captureStackTrace(this, clazz);
+  }
+
+  set text(text) {
+    merge(this.message, { text });
+  }
+  set type(type) {
+    merge(this.message, { type });
   }
 }
 
-export class SubjectMustHaveCodeException extends Error {
+export class PropertyLeftException extends Exception {
   constructor(...args) {
-    super(...args);
-    this.message = "Subject must have a code";
-    Error.captureStackTrace(this, SubjectMustHaveCodeException);
+    super(PropertyLeftException, ...args);
+    const entity = args[0];
+    const property = args[1];
+    this.text = `${entity} must have a ${property}`;
+    this.type = "property_left";
   }
 }
 
-export class EntityNotFound extends Error {
+export class EntityNotFound extends Exception {
   constructor(...args) {
-    /* eslint-disable-next-line */
-    const { id, sarlompa } = args;
-    super(...args);
-    this.message = `Entity with id=${id} not found`;
-    Error.captureStackTrace(this, SubjectMustHaveCodeException);
+    super(EntityNotFound, ...args);
+    const entity = args[0];
+    const id = args[1];
+    this.text = `${entity} with id=${id} not found`;
+    this.type = "entity_not_found";
+    this.statusCode = 404;
   }
 }
 
-export class DuplicatedSubjectException extends Error {
+export class DuplicatedSubjectException extends Exception {
   constructor(...args) {
-    /* eslint-disable-next-line */
-    const { name, code, sarlompa } = args;
-    super(...args);
-    this.message = `Entity with name=${name} or code=${code} already exists`;
-    Error.captureStackTrace(this, SubjectMustHaveCodeException);
+    const name = args[0];
+    const code = args[1];
+    super(DuplicatedSubjectException, ...args);
+    this.text = `Entity with name=${name} or code=${code} already exists`;
+    this.type = "duplicated_subject_exception";
   }
 }
 

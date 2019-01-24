@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import config from "../config";
+import { connect } from "../db";
 
 const bluebird = require("bluebird");
 mongoose.Promise = bluebird;
@@ -11,10 +11,5 @@ export const removeModel = modelName => {
 };
 
 export const cleanDb = () => {
-  return mongoose
-    .connect(
-      config.db.url,
-      { useNewUrlParser: true }
-    )
-    .then(() => bluebird.all(mongoose.modelNames().map(removeModel)));
+  return connect().then(() => bluebird.all(mongoose.modelNames().map(removeModel)));
 };

@@ -6,6 +6,6 @@ mongoose.Promise = require("bluebird");
 export const connect = (config = appConfig) => {
   return mongoose.connect(
     config.db.url,
-    { useNewUrlParser: true }
+    { useNewUrlParser: true, useCreateIndex: true }
   );
 };

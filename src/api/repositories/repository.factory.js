@@ -2,11 +2,11 @@ import { EntityNotFound } from "../../exceptions";
 import { merge } from "lodash";
 
 class RepositoryFactory {
-  static createCRUD(model, ...overrides) {
+  static createCRUD(model, modelName, ...overrides) {
     class CRUDRepository {
       get(id) {
         return model.findById(id).catch(() => {
-          throw new EntityNotFound(id);
+          throw new EntityNotFound(modelName, id);
         });
       }
 
