@@ -15,12 +15,15 @@ describe("Subject", () => {
     });
 
     it("should be ok if it has both: name and code", () => {
+      const id = "asd123asd2";
       const subject = new Subject.Builder()
         .name(name)
         .code(code)
+        .id(id)
         .build();
       expect(subject.name).to.be.equal(name);
       expect(subject.code).to.be.equal(code);
+      expect(subject.id).to.be.equal(id);
     });
   });
 });

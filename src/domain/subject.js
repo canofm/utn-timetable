@@ -5,6 +5,7 @@ class Subject {
   constructor(build) {
     this.name = build.name;
     this.code = build.code;
+    this.id = build.id;
   }
 
   static get Builder() {
@@ -13,10 +14,17 @@ class Subject {
         this.name = name;
         return this;
       }
+
       code(code) {
         this.code = code;
         return this;
       }
+
+      id(id) {
+        this.id = id;
+        return this;
+      }
+
       build() {
         if (isEmpty(this.name)) {
           throw new PropertyLeftException("Subject", "name");

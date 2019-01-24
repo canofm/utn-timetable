@@ -6,7 +6,6 @@ import config from "../../config";
 import { EntityNotFound } from "../../exceptions";
 import { SubjectRepository } from "../repositories";
 import { Subject } from "../../domain";
-import { omit } from "lodash";
 
 chai.use(chaiHttp);
 const request = () => chai.request(app);
@@ -35,9 +34,8 @@ describe("Subject API", () => {
           expect(res).to.be.json;
           // eslint-disable-next-line
           const [elem, _] = res.body.items;
-          const item1 = omit(elem, ["_id", "__v"]);
-          expect(item1.name).to.be.eql(subject.name);
-          expect(item1.code).to.be.eql(subject.code);
+          expect(elem.name).to.be.eql(subject.name);
+          expect(elem.code).to.be.eql(subject.code);
         });
     });
 
