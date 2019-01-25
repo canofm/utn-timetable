@@ -16,7 +16,7 @@ import { SUBJECT_SCHEMA_VALIDATION_MESSAGE_NAME } from "../../schemas/subject.sc
 
 chai.use(chaiHttp);
 const request = () => chai.request(app);
-const subjectUri = `${config.api.baseUri}/subject/`;
+const subjectUri = `${config.api.baseUri}/subject`;
 
 describe("Subject API", () => {
   beforeEach(async () => await cleanDb());
@@ -50,7 +50,7 @@ describe("Subject API", () => {
         // since we don't have the ids of any subject, we need to ask for one of them to the getAll endpoint
         const res = await request().get(subjectUri);
         subject = res.body.items[0];
-        const innerResponse = await request().get(`${subjectUri}${subject.id}`);
+        const innerResponse = await request().get(`${subjectUri}/${subject.id}`);
         expect(innerResponse).to.have.status(200);
         expect(innerResponse).to.be.json;
         expect(innerResponse.body).to.be.eql(subject);
@@ -58,7 +58,7 @@ describe("Subject API", () => {
 
       it("if subject doesn't exists should return 404", async () => {
         const id = 1234;
-        const res = await request().get(`${subjectUri}${id}`);
+        const res = await request().get(`${subjectUri}/${id}`);
 
         const error = JSON.parse(res.error.text);
         const errorExpected = new EntityNotFound("Subject", id).message;
@@ -125,7 +125,7 @@ describe("Subject API", () => {
       const { id } = subjectThatAlreadyExists;
       const update = { name: "otherName" };
       const res = await request()
-        .put(`${subjectUri}${id}`)
+        .put(`${subjectUri}/${id}`)
         .send(update);
 
       expect(res).to.have.status(200);
@@ -143,7 +143,7 @@ describe("Subject API", () => {
       const update = { code: otherSubjectDoc.code };
 
       const res = await request()
-        .put(`${subjectUri}${id}`)
+        .put(`${subjectUri}/${id}`)
         .send(update);
 
       expect(res).to.have.status(409);
@@ -166,12 +166,14 @@ describe("Subject API", () => {
     afterEach(async () => await cleanDb());
 
     it("should remove the subject given and return 204", async () => {
-      const res = await request().delete(`${subjectUri}${id}`);
-
+      const res = await request().delete(`${subjectUri}/${id}`);
       expect(res).to.have.status(204);
     });
 
-    // TODO: what's happend if the ID didn't exists
+    it("when trying to remove a subject that doesn't exists should returns 404", async () => {
+      const res = await request().delete(`${subjectUri}/4edd40c86762e0fb12000003`);
+      expect(res).to.have.status(404);
+    });
   });
 });
 

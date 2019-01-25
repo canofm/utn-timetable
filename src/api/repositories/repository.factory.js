@@ -32,7 +32,12 @@ class RepositoryFactory {
       }
 
       delete(id) {
-        return model.deleteOne({ id });
+        return model.deleteOne({ _id: id }).then(result => {
+          if (result.deletedCount === 0) {
+            throw new EntityNotFound(modelName, id);
+          }
+          return result;
+        });
       }
     }
     return merge(new CRUDRepository(), overrides);

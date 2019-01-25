@@ -20,5 +20,6 @@ const subjectSchema = new mongoose.Schema({
 subjectSchema.post("save", mongoErrorHandler);
 subjectSchema.post("update", mongoErrorHandler);
 subjectSchema.post("findOneAndUpdate", mongoErrorHandler);
+subjectSchema.post("deleteOne", mongoErrorHandler);
 
 export const SubjectModel = mongoose.model("subject", subjectSchema);
