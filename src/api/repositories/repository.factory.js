@@ -1,5 +1,5 @@
 import { EntityNotFound } from "../../exceptions";
-import { merge } from "lodash";
+import { merge, isEmpty } from "lodash";
 
 class RepositoryFactory {
   static createCRUD(model, mapper, modelName, ...overrides) {
@@ -28,7 +28,12 @@ class RepositoryFactory {
       }
 
       update(id, entity) {
-        return model.findOneAndUpdate({ _id: id }, entity, { new: true }).then(mapper.toDomain);
+        return model.findOneAndUpdate({ _id: id }, entity, { new: true }).then(entity => {
+          if (isEmpty(entity)) {
+            throw new EntityNotFound(modelName, id);
+          }
+          return mapper.toDomain(entity);
+        });
       }
 
       delete(id) {

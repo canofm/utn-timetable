@@ -133,7 +133,7 @@ describe("Subject API", () => {
       expect(res.body.name).to.be.eql(update.name);
     });
 
-    it("when trying to update but duplicate a unique field, it should returns 409", async () => {
+    it("when trying to update an existing subject but duplicate a unique field, it should returns 409", async () => {
       const otherSubject = new Subject.Builder()
         .name("otherName")
         .code("1qaz")
@@ -151,7 +151,13 @@ describe("Subject API", () => {
       const errorExpected = new DuplicatedEntityException().message;
       expect(error.type).to.be.eql(errorExpected.type);
     });
-    // case 3: try to update an entity which doesn't exists
+
+    it("when try to update a subject that doesn't exists, it should returns 404", async () => {
+      const res = await request()
+        .put(`${subjectUri}/4edd40c86762e0fb12000003`)
+        .send({ name: "someName" });
+      expect(res).to.have.status(404);
+    });
   });
 
   describe("DELETE /subject/:id", () => {
