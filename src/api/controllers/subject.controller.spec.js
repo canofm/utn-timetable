@@ -113,7 +113,25 @@ describe("Subject API", () => {
   });
 
   describe("PUT /subject/:id", () => {
-    // case 1: happy
+    let subjectThatAlreadyExists;
+    beforeEach(async () => {
+      const [subject] = createSubjects(1);
+      subjectThatAlreadyExists = await SubjectRepository.create(subject);
+    });
+
+    afterEach(async () => await cleanDb());
+
+    it("change name to an already exists subject, it should returns 200 and the subject updated", async () => {
+      const { id } = subjectThatAlreadyExists;
+      const update = { name: "otherName" };
+      const res = await request()
+        .put(`${subjectUri}${id}`)
+        .send(update);
+
+      expect(res).to.have.status(200);
+      expect(res).to.be.json;
+      expect(res.body.name).to.be.eql(update.name);
+    });
     // case 2: try to duplicated
     // case 3: try to update an entity which doesn't exists
   });

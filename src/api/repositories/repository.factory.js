@@ -28,10 +28,7 @@ class RepositoryFactory {
       }
 
       update(id, entity) {
-        return this.get(id)
-          .then(oldEntity => merge(oldEntity, entity))
-          .then(mergedEntity => mergedEntity.save())
-          .then(mapper.toDomain);
+        return model.findOneAndUpdate({ _id: id }, entity, { new: true }).then(mapper.toDomain);
       }
 
       delete(id) {
