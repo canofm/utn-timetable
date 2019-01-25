@@ -1,10 +1,15 @@
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import * as Promise from "bluebird";
+import { omit } from "lodash";
 import { cleanDb } from "../../test_helpers";
 import app from "../../server";
 import config from "../../config";
-import { EntityNotFound, SchemaValidationException } from "../../exceptions";
+import {
+  EntityNotFound,
+  SchemaValidationException,
+  DuplicatedEntityException
+} from "../../exceptions";
 import { SubjectRepository } from "../repositories";
 import { Subject } from "../../domain";
 import { SUBJECT_SCHEMA_VALIDATION_MESSAGE_NAME } from "../../schemas/subject.schema";
@@ -92,7 +97,19 @@ describe("Subject API", () => {
         .message;
       expect(error.type).to.be.eql(errorExpected.type);
     });
-    // case 3: try to create a duplicated
+
+    it("when trying to create an already exists subject, it should returns 409", async () => {
+      const [subject] = createSubjects(1);
+      const subjectThatAlreadyExists = await SubjectRepository.create(subject);
+      const res = await request()
+        .post(subjectUri)
+        .send(omit(subjectThatAlreadyExists, ["id"]));
+
+      expect(res).to.have.status(409);
+      const error = res.body;
+      const errorExpected = new DuplicatedEntityException().message;
+      expect(error.type).to.be.eql(errorExpected.type);
+    });
   });
 
   describe("PUT /subject/:id", () => {

@@ -41,7 +41,7 @@ export class DuplicatedEntityException extends Exception {
   constructor(...args) {
     super(DuplicatedEntityException, ...args);
     this.text = args[0];
-    this.type = "duplicated_subject_exception";
+    this.type = "duplicated_entity_exception";
     this.statusCode = 409;
   }
 }
