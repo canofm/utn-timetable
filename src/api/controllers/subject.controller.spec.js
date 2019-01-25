@@ -1,5 +1,6 @@
 import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
+import * as Promise from "bluebird";
 import { cleanDb } from "../../test_helpers";
 import app from "../../server";
 import config from "../../config";
@@ -13,15 +14,11 @@ const request = () => chai.request(app);
 describe("Subject API", () => {
   beforeEach(() => cleanDb());
   describe("GET", () => {
-    let subject;
+    let subjects;
 
     beforeEach(done => {
-      subject = new Subject.Builder()
-        .name("aName")
-        .code("123456")
-        .build();
-
-      SubjectRepository.create(subject).then(() => done());
+      subjects = createSubjects(2);
+      Promise.map(subjects, SubjectRepository.create).then(() => done());
     });
 
     afterEach(() => cleanDb());
@@ -32,10 +29,13 @@ describe("Subject API", () => {
         .then(res => {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
-          // eslint-disable-next-line
-          const [elem, _] = res.body.items;
-          expect(elem.name).to.be.eql(subject.name);
-          expect(elem.code).to.be.eql(subject.code);
+          const { items, total } = res.body;
+          expect(total).to.be.eql(2);
+          expect(items).to.have.lengthOf(2);
+          for (let i = 0; i < items.length; i++) {
+            expect(items[i].name).to.be.eql(subjects[i].name);
+            expect(items[i].code).to.be.eql(subjects[i].code);
+          }
         });
     });
 
@@ -53,3 +53,15 @@ describe("Subject API", () => {
     });
   });
 });
+
+const createSubjects = amount => {
+  let subjects = [];
+  for (let i = 0; i < amount; i++) {
+    const newSubject = new Subject.Builder()
+      .name(`aName${i}`)
+      .code(i.toString())
+      .build();
+    subjects.push(newSubject);
+  }
+  return subjects;
+};
