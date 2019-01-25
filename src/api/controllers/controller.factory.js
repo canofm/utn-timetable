@@ -34,7 +34,7 @@ export default class ControllerFactory {
       delete(req, res, next) {
         return service
           .delete(req.params.id)
-          .then(entity => res.status(204).json(entity))
+          .then(() => res.sendStatus(204))
           .catch(err => next(err));
       }
     }

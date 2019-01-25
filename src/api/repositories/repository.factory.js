@@ -35,7 +35,7 @@ class RepositoryFactory {
       }
 
       delete(id) {
-        return this.get(id).then(entity => entity.remove());
+        return model.deleteOne({ id });
       }
     }
     return merge(new CRUDRepository(), overrides);

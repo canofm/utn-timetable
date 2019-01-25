@@ -75,6 +75,31 @@ describe("Subject API", () => {
       });
     });
   });
+
+  describe("POST", () => {});
+  describe("PUT", () => {});
+  describe("DELETE", () => {
+    let id;
+
+    beforeEach(done => {
+      const [subject] = createSubjects(1);
+      SubjectRepository.create(subject).then(newSubject => {
+        id = newSubject.id;
+        done();
+      });
+    });
+
+    afterEach(() => cleanDb());
+
+    it("should remove the subject given and return 204", done => {
+      request()
+        .delete(`${subjectUri}${id}`)
+        .then(res => {
+          expect(res).to.have.status(204);
+          done();
+        });
+    });
+  });
 });
 
 const createSubjects = amount => {
