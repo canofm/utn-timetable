@@ -4,9 +4,14 @@ import * as Promise from "bluebird";
 import { cleanDb } from "../../test_helpers";
 import app from "../../server";
 import config from "../../config";
-import { EntityNotFound } from "../../exceptions";
+import {
+  EntityNotFound,
+  SchemaValidatorException,
+  SchemaValidationException
+} from "../../exceptions";
 import { SubjectRepository } from "../repositories";
 import { Subject } from "../../domain";
+import { SUBJECT_SCHEMA_VALIDATION_MESSAGE_NAME } from "../../schemas/subject.schema";
 
 chai.use(chaiHttp);
 const request = () => chai.request(app);
@@ -76,9 +81,45 @@ describe("Subject API", () => {
     });
   });
 
-  describe("POST", () => {});
-  describe("PUT", () => {});
-  describe("DELETE", () => {
+  describe("POST /subject", () => {
+    it("when body is correct, it shoulds returns 201 with the entity just created", () => {
+      const [subject] = createSubjects(1);
+      request()
+        .post(subjectUri)
+        .send(subject)
+        .then(res => {
+          expect(res).to.have.status(201);
+          expect(res).to.be.json;
+          const { body } = res;
+          expect(body.name).to.be.eql(subject.name);
+          expect(body.code).to.be.eql(subject.code);
+          expect(body.id).to.not.be.empty;
+        });
+    });
+
+    it("when body sent is incomplete, it shoulds return 400", () => {
+      request()
+        .post(subjectUri)
+        .send({ code: "12345" })
+        .end((err, res) => {
+          expect(res).to.have.status(400);
+          const error = JSON.parse(res.error.text);
+          const errorExpected = new SchemaValidationException(
+            SUBJECT_SCHEMA_VALIDATION_MESSAGE_NAME
+          ).message;
+          expect(error.type).to.be.eql(errorExpected.type);
+        });
+    });
+    // case 3: try to create a duplicated
+  });
+
+  describe("PUT /subject/:id", () => {
+    // case 1: happy
+    // case 2: try to duplicated
+    // case 3: try to update an entity which doesn't exists
+  });
+
+  describe("DELETE /subject/:id", () => {
     let id;
 
     beforeEach(done => {

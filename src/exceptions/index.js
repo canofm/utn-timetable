@@ -15,13 +15,14 @@ class Exception extends Error {
   }
 }
 
-export class PropertyLeftException extends Exception {
+export class PropertyRequiredException extends Exception {
   constructor(...args) {
-    super(PropertyLeftException, ...args);
+    super(PropertyRequiredException, ...args);
     const entity = args[0];
     const property = args[1];
     this.text = `${entity} must have a ${property}`;
-    this.type = "property_left";
+    this.type = "property_required_exception";
+    this.statusCode = 400;
   }
 }
 
@@ -44,5 +45,15 @@ export class DuplicatedEntityException extends Exception {
   }
 }
 
+export class SchemaValidationException extends Exception {
+  constructor(...args) {
+    super(SchemaValidationException, ...args);
+    this.text = args[0];
+    this.type = "schema_validator_exception";
+    this.statusCode = 400;
+  }
+}
+
 export const DUPLICATED_KEY_ERROR_CODE = 11000;
 export const MONGO_EXCEPTION = "MongoError";
+export const SCHEMA_VALIDATOR_EXCEPTION = "ValidationError";
