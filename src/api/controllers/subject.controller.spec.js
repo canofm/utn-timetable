@@ -132,7 +132,25 @@ describe("Subject API", () => {
       expect(res).to.be.json;
       expect(res.body.name).to.be.eql(update.name);
     });
-    // case 2: try to duplicated
+
+    it("when trying to update but duplicate a unique field, it should returns 409", async () => {
+      const otherSubject = new Subject.Builder()
+        .name("otherName")
+        .code("1qaz")
+        .build();
+      const otherSubjectDoc = await SubjectRepository.create(otherSubject);
+      const { id } = subjectThatAlreadyExists;
+      const update = { code: otherSubjectDoc.code };
+
+      const res = await request()
+        .put(`${subjectUri}${id}`)
+        .send(update);
+
+      expect(res).to.have.status(409);
+      const error = res.body;
+      const errorExpected = new DuplicatedEntityException().message;
+      expect(error.type).to.be.eql(errorExpected.type);
+    });
     // case 3: try to update an entity which doesn't exists
   });
 
@@ -152,6 +170,8 @@ describe("Subject API", () => {
 
       expect(res).to.have.status(204);
     });
+
+    // TODO: what's happend if the ID didn't exists
   });
 });
 
