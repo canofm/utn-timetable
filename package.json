@@ -4,13 +4,14 @@
   "description": "Timetable registry for courses of UTN FRBA",
   "main": "src/index.js",
   "scripts": {
-    "test": "nyc --reporter=html mocha --require @babel/register --recursive 'src/**/**/*.js'",
+    "test": "nyc --reporter=html mocha --require @babel/register --require @babel/polyfill --recursive 'src/**/**/*.js'",
     "start": "nodemon --exec babel-node src/index.js",
     "serve": "node dist/server.js"
   },
   "author": "Federico Cano",
   "license": "MIT",
   "dependencies": {
+    "@babel/polyfill": "^7.2.5",
     "bluebird": "^3.5.3",
     "body-parser": "^1.18.3",
     "chai-http": "^4.2.1",
@@ -24,6 +25,7 @@
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/node": "^7.2.2",
+    "@babel/plugin-transform-async-to-generator": "^7.2.0",
     "@babel/preset-env": "^7.2.3",
     "@babel/register": "^7.0.0",
     "babel-eslint": "^10.0.1",

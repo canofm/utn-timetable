@@ -14,99 +14,83 @@ const request = () => chai.request(app);
 const subjectUri = `${config.api.baseUri}/subject/`;
 
 describe("Subject API", () => {
-  beforeEach(() => cleanDb());
+  beforeEach(async () => await cleanDb());
   describe("GET", () => {
     let subjects;
 
-    beforeEach(done => {
+    beforeEach(async () => {
       subjects = createSubjects(2);
-      Promise.map(subjects, SubjectRepository.create).then(() => done());
+      await Promise.map(subjects, SubjectRepository.create);
     });
 
     afterEach(() => cleanDb());
     describe("/subject", () => {
-      it("should get all subjects", () => {
-        request()
-          .get(subjectUri)
-          .then(res => {
-            expect(res).to.have.status(200);
-            expect(res).to.be.json;
-            const { items, total } = res.body;
-            expect(total).to.be.eql(2);
-            expect(items).to.have.lengthOf(2);
-            for (let i = 0; i < items.length; i++) {
-              expect(items[i].name).to.be.eql(subjects[i].name);
-              expect(items[i].code).to.be.eql(subjects[i].code);
-            }
-          });
+      it("should get all subjects", async () => {
+        const res = await request().get(subjectUri);
+        expect(res).to.have.status(200);
+        expect(res).to.be.json;
+        const { items, total } = res.body;
+        expect(total).to.be.eql(2);
+        expect(items).to.have.lengthOf(2);
+        for (let i = 0; i < items.length; i++) {
+          expect(items[i].name).to.be.eql(subjects[i].name);
+          expect(items[i].code).to.be.eql(subjects[i].code);
+        }
       });
     });
 
     describe("/subject/:id", () => {
-      it("if should exists should return it with 200 as status code", done => {
+      it("if should exists should return it with 200 as status code", async () => {
         let subject;
-        // since we don't have the ids of any subject, we need to ask for the to getAll endpoint
-        request()
-          .get(subjectUri)
-          .then(res => (subject = res.body.items[0]))
-          .then(() => {
-            // here star the test
-            request()
-              .get(`${subjectUri}${subject.id}`)
-              .then(innerRespose => {
-                expect(innerRespose).to.have.status(200);
-                expect(innerRespose).to.be.json;
-                expect(innerRespose.body).to.be.eql(subject);
-                done();
-              });
-          });
+        // since we don't have the ids of any subject, we need to ask for one of them to the getAll endpoint
+        const res = await request().get(subjectUri);
+        subject = res.body.items[0];
+        const innerResponse = await request().get(`${subjectUri}${subject.id}`);
+        expect(innerResponse).to.have.status(200);
+        expect(innerResponse).to.be.json;
+        expect(innerResponse.body).to.be.eql(subject);
       });
 
-      it("if subject doesn't exists should return 404", () => {
+      it("if subject doesn't exists should return 404", async () => {
         const id = 1234;
-        request()
-          .get(`${subjectUri}${id}`)
-          .end((err, res) => {
-            const error = JSON.parse(res.error.text);
-            const errorExpected = new EntityNotFound("Subject", id).message;
-            expect(res).to.have.status(404);
-            expect(error.text).to.be.eql(errorExpected.text);
-            expect(error.type).to.be.eql(errorExpected.type);
-          });
+        const res = await request().get(`${subjectUri}${id}`);
+
+        const error = JSON.parse(res.error.text);
+        const errorExpected = new EntityNotFound("Subject", id).message;
+        expect(res).to.have.status(404);
+        expect(error.text).to.be.eql(errorExpected.text);
+        expect(error.type).to.be.eql(errorExpected.type);
       });
     });
   });
 
   describe("POST /subject", () => {
-    beforeEach(() => cleanDb());
+    beforeEach(async () => await cleanDb());
 
-    it("when body is correct, it shoulds returns 201 with the entity just created", () => {
+    it("when body is correct, it shoulds returns 201 with the entity just created", async () => {
       const [subject] = createSubjects(1);
-      request()
+      const res = await request()
         .post(subjectUri)
-        .send(subject)
-        .then(res => {
-          expect(res).to.have.status(201);
-          expect(res).to.be.json;
-          const { body } = res;
-          expect(body.name).to.be.eql(subject.name);
-          expect(body.code).to.be.eql(subject.code);
-          expect(body.id).to.not.be.empty;
-        });
+        .send(subject);
+
+      expect(res).to.have.status(201);
+      expect(res).to.be.json;
+      const { body } = res;
+      expect(body.name).to.be.eql(subject.name);
+      expect(body.code).to.be.eql(subject.code);
+      expect(body.id).to.not.be.empty;
     });
 
-    it("when body sent is incomplete, it shoulds return 400", () => {
-      request()
+    it("when body sent is incomplete, it shoulds return 400", async () => {
+      const res = await request()
         .post(subjectUri)
-        .send({ code: "12345" })
-        .end((err, res) => {
-          expect(res).to.have.status(400);
-          const error = JSON.parse(res.error.text);
-          const errorExpected = new SchemaValidationException(
-            SUBJECT_SCHEMA_VALIDATION_MESSAGE_NAME
-          ).message;
-          expect(error.type).to.be.eql(errorExpected.type);
-        });
+        .send({ code: "12345" });
+
+      expect(res).to.have.status(400);
+      const error = JSON.parse(res.error.text);
+      const errorExpected = new SchemaValidationException(SUBJECT_SCHEMA_VALIDATION_MESSAGE_NAME)
+        .message;
+      expect(error.type).to.be.eql(errorExpected.type);
     });
     // case 3: try to create a duplicated
   });
@@ -120,23 +104,18 @@ describe("Subject API", () => {
   describe("DELETE /subject/:id", () => {
     let id;
 
-    beforeEach(done => {
+    beforeEach(async () => {
       const [subject] = createSubjects(1);
-      SubjectRepository.create(subject).then(newSubject => {
-        id = newSubject.id;
-        done();
-      });
+      const newSubject = await SubjectRepository.create(subject);
+      id = newSubject.id;
     });
 
-    afterEach(() => cleanDb());
+    afterEach(async () => await cleanDb());
 
-    it("should remove the subject given and return 204", done => {
-      request()
-        .delete(`${subjectUri}${id}`)
-        .then(res => {
-          expect(res).to.have.status(204);
-          done();
-        });
+    it("should remove the subject given and return 204", async () => {
+      const res = await request().delete(`${subjectUri}${id}`);
+
+      expect(res).to.have.status(204);
     });
   });
 });

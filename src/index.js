@@ -1,3 +1,5 @@
+require("@babel/register");
+require("@babel/polyfill");
 import http from "http";
 import app from "./server";
 import config from "./config";
