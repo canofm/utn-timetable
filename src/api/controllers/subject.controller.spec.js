@@ -17,6 +17,7 @@ import { SUBJECT_SCHEMA_VALIDATION_MESSAGE_NAME } from "../../schemas/subject.sc
 chai.use(chaiHttp);
 const request = () => chai.request(app);
 const subjectUri = `${config.api.baseUri}/subject`;
+const uuidRandom = "4edd40c86762e0fb12000003";
 
 describe("Subject API", () => {
   beforeEach(async () => await cleanDb());
@@ -29,7 +30,7 @@ describe("Subject API", () => {
     });
 
     afterEach(() => cleanDb());
-    describe("/subject", () => {
+    describe("GET /subject", () => {
       it("should get all subjects", async () => {
         const res = await request().get(subjectUri);
         expect(res).to.have.status(200);
@@ -44,7 +45,7 @@ describe("Subject API", () => {
       });
     });
 
-    describe("/subject/:id", () => {
+    describe("GET /subject/:id", () => {
       it("if should exists should return it with 200 as status code", async () => {
         let subject;
         // since we don't have the ids of any subject, we need to ask for one of them to the getAll endpoint
@@ -154,7 +155,7 @@ describe("Subject API", () => {
 
     it("when try to update a subject that doesn't exists, it should returns 404", async () => {
       const res = await request()
-        .put(`${subjectUri}/4edd40c86762e0fb12000003`)
+        .put(`${subjectUri}/${uuidRandom}`)
         .send({ name: "someName" });
       expect(res).to.have.status(404);
     });
@@ -177,7 +178,7 @@ describe("Subject API", () => {
     });
 
     it("when trying to remove a subject that doesn't exists should returns 404", async () => {
-      const res = await request().delete(`${subjectUri}/4edd40c86762e0fb12000003`);
+      const res = await request().delete(`${subjectUri}/${uuidRandom}`);
       expect(res).to.have.status(404);
     });
   });
