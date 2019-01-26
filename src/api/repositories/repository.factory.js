@@ -2,7 +2,7 @@ import { EntityNotFound } from "../../exceptions";
 import { merge, isEmpty } from "lodash";
 
 class RepositoryFactory {
-  static createCRUD(model, mapper, modelName, ...overrides) {
+  static createCRUD(model, mapper, modelName, overrides) {
     class CRUDRepository {
       get(id) {
         return model
@@ -21,7 +21,8 @@ class RepositoryFactory {
       }
 
       create(entity) {
-        return model.create(entity).then(mapper.toDomain);
+        const resource = mapper.toModel(entity);
+        return model.create(resource).then(mapper.toDomain);
       }
 
       async update(id, entity) {

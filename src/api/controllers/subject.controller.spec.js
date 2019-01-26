@@ -7,12 +7,11 @@ import app from "../../server";
 import config from "../../config";
 import {
   EntityNotFound,
-  SchemaValidationException,
-  DuplicatedEntityException
+  DuplicatedEntityException,
+  PropertyRequiredException
 } from "../../exceptions";
 import { SubjectRepository } from "../repositories";
 import { Subject } from "../../domain";
-import { SUBJECT_SCHEMA_VALIDATION_MESSAGE_NAME } from "../../schemas/subject.schema";
 
 chai.use(chaiHttp);
 const request = () => chai.request(app);
@@ -94,8 +93,7 @@ describe("Subject API", () => {
 
       expect(res).to.have.status(400);
       const error = JSON.parse(res.error.text);
-      const errorExpected = new SchemaValidationException(SUBJECT_SCHEMA_VALIDATION_MESSAGE_NAME)
-        .message;
+      const errorExpected = new PropertyRequiredException("Subject", "name").message;
       expect(error.type).to.be.eql(errorExpected.type);
     });
 

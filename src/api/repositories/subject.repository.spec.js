@@ -2,17 +2,17 @@ import { expect } from "chai";
 import { cleanDb } from "../../test_helpers";
 import { SubjectModel } from "../../schemas";
 import { SubjectRepository } from "./subject.repository";
-import { EntityNotFound } from "../../exceptions";
+import { EntityNotFound, PropertyRequiredException } from "../../exceptions";
 import * as Promise from "bluebird";
 
 const uuidRandom = "4edd40c86762e0fb12000003";
+const subject = { name: "aName", code: "aCode" };
 
 describe("SubjectRepository", () => {
   beforeEach(async () => await cleanDb());
 
   describe("get", () => {
     it("should returns subject for the given id", async () => {
-      const subject = { name: "aName", code: "aCode" };
       const subjectCreated = await SubjectModel.create(subject);
       const result = await SubjectRepository.get(subjectCreated.id);
 
@@ -42,7 +42,18 @@ describe("SubjectRepository", () => {
     });
   });
 
-  describe("create", () => {});
+  describe("create", () => {
+    it("should return the resource just created", async () => {
+      const subjectCreated = await SubjectRepository.create(subject);
+      expect(subjectCreated.name).to.be.eql(subject.name);
+      expect(subjectCreated.code).to.be.eql(subject.code);
+    });
+
+    it("should throw a PropertyRequiredException if object given miss a required property", () => {
+      const create = () => SubjectRepository.create({ name: "aName " });
+      expect(create).to.throw(PropertyRequiredException);
+    });
+  });
   describe("update", () => {});
   describe("remove", () => {});
 });

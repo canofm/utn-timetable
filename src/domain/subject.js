@@ -5,7 +5,7 @@ class Subject {
   constructor(build) {
     this.name = build._name;
     this.code = build._code;
-    this.id = build._id;
+    if (!isEmpty(build._id)) this.id = build._id;
   }
 
   static get Builder() {

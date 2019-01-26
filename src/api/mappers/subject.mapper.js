@@ -1,6 +1,13 @@
 import { Subject } from "../../domain";
 
 class SubjectMapper {
+  toModel(entity) {
+    return new Subject.Builder()
+      .name(entity.name)
+      .code(entity.code)
+      .build();
+  }
+
   toDomain(model) {
     return new Subject.Builder()
       .name(model.name)
