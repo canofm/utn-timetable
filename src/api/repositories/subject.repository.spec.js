@@ -49,11 +49,21 @@ describe("SubjectRepository", () => {
       expect(subjectCreated.code).to.be.eql(subject.code);
     });
 
-    it("should throw a PropertyRequiredException if object given miss a required property", () => {
+    it("should throws a PropertyRequiredException if object given miss a required property", () => {
       const create = () => SubjectRepository.create({ name: "aName " });
       expect(create).to.throw(PropertyRequiredException);
     });
   });
-  describe("update", () => {});
+
+  describe("update", () => {
+    beforeEach(async () => await cleanDb());
+
+    it("should return the resource updated", async () => {
+      const name = "otherName";
+      const { _id } = await SubjectModel.create(subject);
+      const subjectUpdated = await SubjectRepository.update(_id, { name });
+      expect(subjectUpdated.name).to.be.eql(name);
+    });
+  });
   describe("remove", () => {});
 });
