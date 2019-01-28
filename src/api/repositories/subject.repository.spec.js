@@ -65,5 +65,17 @@ describe("SubjectRepository", () => {
       expect(subjectUpdated.name).to.be.eql(name);
     });
   });
-  describe("remove", () => {});
+
+  describe("remove", () => {
+    it("should remove the subject", async () => {
+      const { _id } = await SubjectModel.create(subject);
+      await SubjectRepository.delete(_id);
+      const nonExistentSubject = await SubjectModel.findById(_id);
+      expect(nonExistentSubject).to.be.null;
+    });
+
+    it("if the subject doesn't exists should throw EntityNotFoundException", done => {
+      SubjectRepository.delete(uuidRandom).catch(() => done());
+    });
+  });
 });
